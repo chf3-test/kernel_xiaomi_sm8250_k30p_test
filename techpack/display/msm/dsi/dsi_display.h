@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #ifndef _DSI_DISPLAY_H_
@@ -734,5 +735,8 @@ char *dsi_display_get_cmdline_panel_info(void);
 
 int dsi_display_hbm_set_disp_param(struct drm_connector *connector,
 				u32 param_type);
+
+int dsi_display_esd_irq_ctrl(struct dsi_display *display,
+		bool enable);
 
 #endif /* _DSI_DISPLAY_H_ */

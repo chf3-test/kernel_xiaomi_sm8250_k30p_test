@@ -152,7 +152,8 @@ static int qdss_check_entry(struct qdss_bridge_drvdata *drvdata)
 	int ret = 0;
 
 	list_for_each_entry(entry, &drvdata->buf_tbl, link) {
-		if (atomic_read(&entry->available) == 0) {
+		if (atomic_read(&entry->available) == 0
+			&& atomic_read(&entry->used) == 1) {
 			ret = 1;
 			return ret;
 		}
@@ -200,6 +201,7 @@ static void qdss_buf_tbl_remove(struct qdss_bridge_drvdata *drvdata,
 		if (entry->buf != buf)
 			continue;
 		atomic_set(&entry->available, 1);
+		atomic_set(&entry->used, 0);
 		spin_unlock_bh(&drvdata->lock);
 		return;
 	}
@@ -383,6 +385,7 @@ static int usb_write(struct qdss_bridge_drvdata *drvdata,
 
 	entry->usb_req->buf = buf;
 	entry->usb_req->length = len;
+	atomic_set(&entry->used, 1);
 	ret = usb_qdss_write(drvdata->usb_ch, entry->usb_req);
 
 	return ret;
@@ -847,6 +850,7 @@ static void qdss_mhi_remove(struct mhi_device *mhi_dev)
 	} else
 		spin_unlock_bh(&drvdata->lock);
 
+	device_remove_file(drvdata->dev, &dev_attr_mode);
 	device_destroy(mhi_class, drvdata->cdev->dev);
 	unregister_chrdev_region(drvdata->cdev->dev, 1);
 	cdev_del(drvdata->cdev);
@@ -921,6 +925,11 @@ static int qdss_mhi_probe(struct mhi_device *mhi_dev,
 		return ret;
 	}
 
+	drvdata->cdev = cdev_alloc();
+	if (!drvdata->cdev) {
+		ret = -ENOMEM;
+		return ret;
+	}
 	ret = alloc_chrdev_region(&dev, baseminor, count, "mhi_qdss");
 	if (ret < 0) {
 		pr_err("alloc_chrdev_region failed %d\n", ret);

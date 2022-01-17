@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #define pr_fmt(fmt)	"%s: " fmt, __func__
@@ -593,6 +594,11 @@ static void dsi_pll_setup_config(struct dsi_pll_7nm *pll,
 	config->disable_prescaler = false;
 	config->enable_ssc = rsc->ssc_en;
 	config->ssc_center = rsc->ssc_center;
+
+	if (pll->cphy_enabled) {
+		config->enable_ssc = false;
+		pr_info("[7nm] disable pll ssc %d\n", config->enable_ssc);
+	}
 
 	if (config->enable_ssc) {
 		if (rsc->ssc_freq)

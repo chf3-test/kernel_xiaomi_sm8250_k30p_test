@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include <linux/math64.h>
@@ -267,6 +268,14 @@ static void dsi_phy_hw_cphy_enable(struct dsi_phy_hw *phy,
 	DSI_W32(phy, DSIPHY_CMN_GLBL_RESCODE_OFFSET_BOT_CTRL,
 			glbl_rescode_bot_ctrl);
 	DSI_W32(phy, DSIPHY_CMN_GLBL_LPTX_STR_CTRL, 0x55);
+
+	if (cfg->cphy_strength) {
+		DSI_W32(phy, DSIPHY_CMN_VREG_CTRL_0, 0x50);
+		DSI_W32(phy, DSIPHY_CMN_VREG_CTRL_1, 0x54);
+		DSI_W32(phy, DSIPHY_CMN_GLBL_RESCODE_OFFSET_TOP_CTRL, 0x1F);
+		DSI_W32(phy, DSIPHY_CMN_GLBL_RESCODE_OFFSET_BOT_CTRL, 0x1F);
+		DSI_W32(phy, DSIPHY_CMN_GLBL_RESCODE_OFFSET_MID_CTRL, 0x1F);
+	}
 
 	/* Remove power down from all blocks */
 	DSI_W32(phy, DSIPHY_CMN_CTRL_0, 0x7f);

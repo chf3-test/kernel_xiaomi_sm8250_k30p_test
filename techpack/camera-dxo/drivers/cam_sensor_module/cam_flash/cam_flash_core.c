@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include <linux/module.h>
@@ -1453,6 +1454,15 @@ int cam_flash_pmic_pkt_parser(struct cam_flash_ctrl *fctrl, void *arg)
 				CAM_ERR(CAM_FLASH,
 					"Apply setting failed: %d",
 					rc);
+
+			//xiaomi add start
+			if(rc && CAM_FLASH_STATE_START == fctrl->flash_state)
+			{
+				CAM_ERR(CAM_FLASH, "cannot apply settings rc = %d for state %d",
+						rc, fctrl->flash_state);
+				return rc;
+			}
+			//xiaomi add end
 
 			fctrl->flash_state = CAM_FLASH_STATE_CONFIG;
 			break;
