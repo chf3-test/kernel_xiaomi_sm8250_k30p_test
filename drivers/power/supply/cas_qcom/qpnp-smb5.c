@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include <linux/debugfs.h>
@@ -5133,6 +5132,12 @@ static int smb5_probe(struct platform_device *pdev)
 	rc = smb5_init_hw(chip);
 	if (rc < 0) {
 		pr_err("Couldn't initialize hardware rc=%d\n", rc);
+		goto cleanup;
+	}
+
+	rc = smblib_masked_write(chg, 0x4046, BIT(7), 0x00);
+	if (rc < 0) {
+		pr_err("Couldn't disable ESR rc=%d\n", rc);
 		goto cleanup;
 	}
 

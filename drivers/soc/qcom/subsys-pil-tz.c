@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014-2021, The Linux Foundation. All rights reserved.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include <linux/kernel.h>
@@ -616,6 +615,8 @@ static int pil_init_image_trusted(struct pil_desc *pil,
 	void *mdata_buf;
 	int ret;
 	struct scm_desc desc = {0};
+	sigset_t new_sigset;
+	sigset_t old_sigset;
 	struct pil_map_fw_info map_fw_info = {
 		.attrs = pil->attrs,
 		.region = region,
@@ -623,8 +624,6 @@ static int pil_init_image_trusted(struct pil_desc *pil,
 		.dev = pil->dev,
 	};
 	void *map_data = pil->map_data ? pil->map_data : &map_fw_info;
-	sigset_t new_sigset;
-	sigset_t old_sigset;
 
 	if (d->subsys_desc.no_auth)
 		return 0;
@@ -639,9 +638,10 @@ static int pil_init_image_trusted(struct pil_desc *pil,
 	/* block all signals */
 	sigprocmask(SIG_SETMASK, &new_sigset, &old_sigset);
 
-	mdata_buf = pil->map_fw_mem(mdata_phys, size, map_data);
+  	mdata_buf = pil->map_fw_mem(mdata_phys, size, map_data);
 	/* restore signal mask */
 	sigprocmask(SIG_SETMASK, &old_sigset, NULL);
+	
 	if (!mdata_buf) {
 		dev_err(pil->dev, "Failed to map memory for metadata.\n");
 		scm_pas_disable_bw();

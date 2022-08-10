@@ -2,7 +2,6 @@
  *  linux/kernel/signal.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
- *  Copyright (C) 2021 XiaoMi, Inc.
  *
  *  1997-11-02  Modified for POSIX.1b signals by Richard Henderson
  *
@@ -46,9 +45,9 @@
 #include <linux/livepatch.h>
 #include <linux/oom.h>
 #include <linux/capability.h>
+#include <linux/millet.h>
 #include <linux/cgroup.h>
 
-#include <linux/millet.h>
 #define CREATE_TRACE_POINTS
 #include <trace/events/signal.h>
 

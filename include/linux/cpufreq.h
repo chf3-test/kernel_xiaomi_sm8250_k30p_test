@@ -2,7 +2,6 @@
  * linux/include/linux/cpufreq.h
  *
  * Copyright (C) 2001 Russell King
- * Copyright (C) 2021 XiaoMi, Inc.
  *           (C) 2002 - 2003 Dominik Brodowski <linux@brodo.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -211,6 +210,12 @@ static inline unsigned int cpufreq_quick_get_max(unsigned int cpu)
 	return 0;
 }
 static inline void disable_cpufreq(void) { }
+#endif
+
+#ifdef CONFIG_MIGT_ENERGY_MODEL
+void create_cpu_pcost_entry(struct cpufreq_policy *policy);
+#else
+static inline void create_cpu_pcost_entry(struct cpufreq_policy *policy) { };
 #endif
 
 #ifdef CONFIG_CPU_FREQ_STAT

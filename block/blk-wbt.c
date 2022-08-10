@@ -16,7 +16,6 @@
  *   scaling step retains the default step==0 window size.
  *
  * Copyright (C) 2016 Jens Axboe
- * Copyright (C) 2021 XiaoMi, Inc.
  *
  */
 #include <linux/kernel.h>

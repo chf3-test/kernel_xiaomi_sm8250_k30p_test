@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2019-2021, The Linux Foundation. All rights reserved. */
-/* Copyright (C) 2021 XiaoMi, Inc. */
 
 #define pr_fmt(fmt) "PM8008: %s: " fmt, __func__
 
@@ -70,14 +69,14 @@
 #define MAX_REG_NAME			20
 #define PM8008_MAX_LDO			7
 
+#ifdef CONFIG_I2C_RETRY
+#define MAX_RETRY_TIME			5
+#endif
+
 enum pmic_subtype {
 	PM8008_SUBTYPE,
 	PM8010_SUBTYPE,
 };
-
-#ifdef CONFIG_I2C_RETRY
-#define MAX_RETRY_TIME			5
-#endif
 
 struct pm8008_chip {
 	struct device		*dev;

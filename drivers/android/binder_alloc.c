@@ -3,7 +3,6 @@
  * Android IPC Subsystem
  *
  * Copyright (C) 2007-2017 Google, Inc.
- * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -350,6 +349,10 @@ static inline struct vm_area_struct *binder_alloc_get_vma(
 	return vma;
 }
 
+#ifdef CONFIG_MILLET
+extern struct task_struct *binder_buff_owner(struct binder_alloc *alloc);
+#endif
+
 static void debug_low_async_space_locked(struct binder_alloc *alloc, int pid)
 {
 	/*
@@ -386,10 +389,6 @@ static void debug_low_async_space_locked(struct binder_alloc *alloc, int pid)
 			      alloc->pid, pid, num_buffers, total_alloc_size);
 	}
 }
-
-#ifdef CONFIG_MILLET
-extern struct task_struct *binder_buff_owner(struct binder_alloc *alloc);
-#endif
 
 static struct binder_buffer *binder_alloc_new_buf_locked(
 				struct binder_alloc *alloc,

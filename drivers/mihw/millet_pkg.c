@@ -149,8 +149,10 @@ static uid_t __sock_i_uid(struct sock *sk)
 {
 	uid_t uid;
 
-	if (sk && sk->sk_socket) {
-		uid = SOCK_INODE(sk->sk_socket)->i_uid.val;
+	if (sk) {
+		read_lock_bh(&sk->sk_callback_lock);
+		uid = sk->sk_socket ? SOCK_INODE(sk->sk_socket)->i_uid.val : 0;
+		read_unlock_bh(&sk->sk_callback_lock);
 		return uid;
 	}
 

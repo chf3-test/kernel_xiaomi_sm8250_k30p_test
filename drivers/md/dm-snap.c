@@ -2,7 +2,6 @@
  * dm-snapshot.c
  *
  * Copyright (C) 2001-2002 Sistina Software (UK) Limited.
- * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This file is released under the GPL.
  */

@@ -2,7 +2,6 @@
  * KTZ Semiconductor KTZ8866 LED Driver
  *
  * Copyright (C) 2013 Ideas on board SPRL
- * Copyright (C) 2021 XiaoMi, Inc.
  *
  * Contact: Zhang Teng <zhangteng3@xiaomi.com>
  *

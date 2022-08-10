@@ -2,7 +2,6 @@
  * BQ2570x battery charging driver
  *
  * Copyright (C) 2017 Texas Instruments *
- * Copyright (C) 2021 XiaoMi, Inc.
  * This package is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -1112,10 +1111,14 @@ static int bq2597x_get_adc_data(struct bq2597x *bq, int channel,  int *result)
 		if (ret < 0)
 			return ret;
 		t = val_l + (val_h << 8);
-		/* vbat need calibration read by NU2105 */
-		if (channel == ADC_VBAT)
-			t = t * (1 + 1.803 * 0.001);
 		*result = t;
+		/* vbat need calibration read by NU2105 */
+		if (channel == ADC_VBAT) {
+			kernel_neon_begin();
+			t = t * (1 + 1.803 * 0.001);
+			*result = t;
+			kernel_neon_end();
+		}
 	} else {
 		ret = bq2597x_read_word(bq, ADC_REG_BASE + (channel << 1), &val);
 		if (ret < 0)
@@ -2540,8 +2543,18 @@ static int bq2597x_charger_probe(struct i2c_client *client,
 
 	ret = bq2597x_detect_device(bq);
 	if (ret) {
-		bq_err("No bq2597x device found!\n");
-		return -ENODEV;
+		mdelay(10);
+		bq_err("bq2597x first detect fail!\n");
+		ret = bq2597x_detect_device(bq);
+		if (ret) {
+			mdelay(10);
+			bq_err("bq2597x first detect fail!\n");
+			ret = bq2597x_detect_device(bq);
+			if (ret) {
+				bq_err("No bq2597x device found!\n");
+				return -ENODEV;
+			}
+		}
 	}
 
 	match = of_match_node(bq2597x_charger_match_table, node);

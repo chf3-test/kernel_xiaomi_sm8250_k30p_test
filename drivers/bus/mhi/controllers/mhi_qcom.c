@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.*/
-/* Copyright (C) 2021 XiaoMi, Inc. */
 
 #include <asm/arch_timer.h>
 #include <linux/debugfs.h>
@@ -701,7 +700,7 @@ static struct mhi_controller *mhi_register_controller(struct pci_dev *pci_dev)
 	mhi_cntrl->of_node = of_node;
 
 	mhi_cntrl->iova_start = memblock_start_of_DRAM();
-	mhi_cntrl->iova_stop = memblock_end_of_DRAM();	
+	mhi_cntrl->iova_stop = memblock_end_of_DRAM();
 
 	/* setup host support for SFR retreival */
 	if (of_property_read_bool(of_node, "mhi,sfr-support"))

@@ -1695,6 +1695,7 @@ int syscall_trace_enter(struct pt_regs *regs)
 
 void syscall_trace_exit(struct pt_regs *regs)
 {
+
 	unsigned long flags = READ_ONCE(current_thread_info()->flags);
 
 #if defined(CONFIG_MILLET) && defined(CONFIG_PACKAGE_RUNTIME_INFO)

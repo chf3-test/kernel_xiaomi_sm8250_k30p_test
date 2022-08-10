@@ -90,7 +90,6 @@ static ssize_t max_brightness_store(struct device *dev,
 		if (led_cdev->usr_brightness_req > 0)
 			led_set_brightness(led_cdev, led_cdev->usr_brightness_req);
 	}
-
 	return size;
 }
 static DEVICE_ATTR_RW(max_brightness);

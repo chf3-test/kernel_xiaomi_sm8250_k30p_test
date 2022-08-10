@@ -1,7 +1,7 @@
 /*
  * TEE driver for goodix fingerprint sensor
  * Copyright (C) 2016 Goodix
- * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (C) 2022 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,11 +343,14 @@ static void gf_kernel_key_input(struct gf_dev *gf_dev, struct gf_key *gf_key)
 
 	if (GF_KEY_HOME == gf_key->key) {
 		key_input = GF_KEY_INPUT_HOME;
-	} else if (GF_KEY_POWER == gf_key->key) {
+	}
+	else if (GF_KEY_POWER == gf_key->key) {
 		key_input = GF_KEY_INPUT_POWER;
-	} else if (GF_KEY_CAMERA == gf_key->key) {
+	}
+	else if (GF_KEY_CAMERA == gf_key->key) {
 		key_input = GF_KEY_INPUT_CAMERA;
-	} else {
+	}
+	else {
 		/* add special key define */
 		key_input = gf_key->key;
 	}
@@ -362,7 +365,6 @@ static void gf_kernel_key_input(struct gf_dev *gf_dev, struct gf_key *gf_key)
 		input_report_key(gf_dev->input, key_input, 0);
 		input_sync(gf_dev->input);
 	}
-
 	if (GF_KEY_HOME == gf_key->key) {
 		pr_debug("%s GF_KEY_HOME_enter\n", __func__);
 		if ((gf_dev->key_flag == 1) && (gf_key->value == 1)){
@@ -620,6 +622,12 @@ static int gf_open(struct inode *inode, struct file *filp)
 	if (regulator_is_enabled(gf_dev->vreg)) {
 		pr_info("fp_vdd_vreg is already enabled!\n");
 	} else {
+
+		rc = regulator_set_load(gf_dev->vreg, 100000);
+		if (rc < 0) {
+			dev_err(&gf_dev->spi->dev, "Regulator set load failed rc = %d\n", rc);
+		}
+
 		rc = regulator_enable(gf_dev->vreg);
 
 		if (rc) {
@@ -733,6 +741,7 @@ static int gf_release(struct inode *inode, struct file *filp)
 
 	if (!gf_dev->users) {
 		pr_debug("disble_irq. irq = %d\n", gf_dev->irq);
+		gpio_direction_output(gf_dev->reset_gpio, 0);
 		gf_disable_irq(gf_dev);
 		/*power off the sensor*/
 		gf_dev->device_available = 0;

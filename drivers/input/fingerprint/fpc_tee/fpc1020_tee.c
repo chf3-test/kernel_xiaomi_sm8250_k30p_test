@@ -18,7 +18,7 @@
  *
  *
  * Copyright (c) 2015 Fingerprint Cards AB <tech@fingerprints.com>
- * Copyright (C) 2021 XiaoMi, Inc.
+ * Copyright (C) 2022 Xiaomi, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License Version 2
@@ -46,6 +46,7 @@
 #include <linux/pinctrl/qcom-pinctrl.h>
 #include <drm/drm_bridge.h>
 #include <drm/drm_notifier_mi.h>
+//#include <asm/hwconf_manager.h>
 
 #define FPC_GPIO_NO_DEFAULT -1
 #define FPC_GPIO_NO_DEFINED -2
@@ -68,6 +69,7 @@
 #define RELEASE_WAKELOCK "release_wakelock"
 #define START_IRQS_RECEIVED_CNT "start_irqs_received_counter"
 
+#define HWMON_CONPONENT_NAME "fingerprint"
 
 static const char *const pctl_names[] = {
 	"fpc1020_reset_reset",
@@ -781,6 +783,8 @@ static ssize_t vendor_update(struct device *dev,
 			     const char *buf, size_t count)
 {
 	int rc;
+	//rc = add_hw_component_info(HWMON_CONPONENT_NAME, "ic_vendor", (char *)buf);
+	//rc = add_hw_component_info(HWMON_CONPONENT_NAME, "reserve", "0xFFFF");
 	return rc ? rc : count;
 }
 
@@ -950,6 +954,7 @@ static int fpc1020_probe(struct platform_device *pdev)
 
 	fpc1020->dev = dev;
 	platform_set_drvdata(pdev, fpc1020);
+	//register_hw_component_info(HWMON_CONPONENT_NAME);
 
 	if (!np) {
 		dev_err(dev, "no of node found\n");
@@ -1052,6 +1057,7 @@ static int fpc1020_remove(struct platform_device *pdev)
 	wakeup_source_unregister(fpc1020->ttw_wl);
 	(void)vreg_setup(fpc1020, "vdd_ana", false);
 	(void)reset_gpio_res(fpc1020);
+	//unregister_hw_component_info(HWMON_CONPONENT_NAME);
 	/*
 	   (void)vreg_setup(fpc1020, "vdd_io", false);
 	   (void)vreg_setup(fpc1020, "vcc_spi", false);

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2017-2019 The Linux Foundation. All rights reserved.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #define pr_fmt(fmt) "QCOM-STEPCHG: %s: " fmt, __func__
@@ -565,7 +564,7 @@ static int get_val(struct range_data *range, int hysteresis, int current_index,
 	 * of our current index.
 	 */
 	if (*new_index == current_index + 1) {
-		if (threshold < range[*new_index].low_threshold + hysteresis) {
+		if (threshold < range[*new_index].low_threshold) {
 			/*
 			 * Stay in the current index, threshold is not higher
 			 * by hysteresis amount
@@ -600,6 +599,11 @@ static void taper_fcc_step_chg(struct step_chg_info *chip, int index,
 	current_fcc = get_effective_result(chip->fcc_votable);
 	target_fcc = chip->step_chg_config->fcc_cfg[index].value;
 
+	if (current_fcc <= 0) {
+		pr_err("current_fcc is low(%d), return.\n", current_fcc);
+		return;
+	}
+
 	if (index == 0) {
 		vote(chip->fcc_votable, STEP_CHG_VOTER, true, target_fcc);
 	} else if (current_voltage >
@@ -613,6 +617,9 @@ static void taper_fcc_step_chg(struct step_chg_info *chip, int index,
 		 */
 		vote(chip->fcc_votable, STEP_CHG_VOTER, true, max(target_fcc,
 			current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA));
+		pr_info("target_fcc:%d, current_fcc-:%d, max:%d.\n", target_fcc,
+				(current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA),
+				max(target_fcc, current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA));
 	} else if ((current_fcc >
 		chip->step_chg_config->fcc_cfg[index - 1].value) &&
 		(current_voltage >
@@ -626,6 +633,11 @@ static void taper_fcc_step_chg(struct step_chg_info *chip, int index,
 		vote(chip->fcc_votable, STEP_CHG_VOTER, true,
 			max(chip->step_chg_config->fcc_cfg[index - 1].value,
 			current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA));
+		pr_info("target_fcc-:%d, current_fcc-:%d, max:%d.\n",
+				chip->step_chg_config->fcc_cfg[index - 1].value,
+				(current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA),
+				max(chip->step_chg_config->fcc_cfg[index - 1].value,
+					current_fcc - TAPERED_STEP_CHG_FCC_REDUCTION_STEP_MA));
 	}
 }
 
